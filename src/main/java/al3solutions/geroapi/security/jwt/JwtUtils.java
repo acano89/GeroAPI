@@ -20,16 +20,16 @@ import java.util.Date;
 @Slf4j
 public class JwtUtils {
 
-    @Value("")
+    @Value("${al3solutions.jwtSecret}")
     private String jwtSecret;
 
-    @Value("")
+    @Value("${al3solutions.jwtExpirationMs}")
     private int jwtExpirationMs;
 
-    @Value("")
+    @Value("${al3solutions.jwtCookieName}")
     private String jwtCookie;
 
-    @Value("")
+    @Value("${al3solutions.jwtRefreshCookieName}")
     private String jwtRefreshCookie;
 
 
