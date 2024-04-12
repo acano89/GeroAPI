@@ -3,7 +3,7 @@
 
 ## Default Data:
 
-* #### La classe GeronimoAPI implementa la interface CommandLineRunner, amb la qual cada cop que arranca es crean els rols necessaris si cal (ROLE_AMDIN, ROLE_USER, ROLE_CARE) a mes d'un usuari per defecte "root" amb le rol ROLE_ADMIN, que permet canviar els rols dels usuaris registrats.
+* #### La classe GeroApiApplication implementa la interface CommandLineRunner, amb la qual cada cop que arranca es crean els rols necessaris si cal (ROLE_AMDIN, ROLE_USER, ROLE_CARE, ROLE_INACTIVE) a mes d'un usuari per defecte "root" amb le rol ROLE_ADMIN, que permet canviar els rols dels usuaris registrats.
 
 * #### Qualsevol nou usuari te el rol ROLE_USER per defecte
 
@@ -44,12 +44,19 @@
         Uses stored refresh token to generate a new 
         JWT token when the current one is expired.
 
-### Admin add new role
+#### Admin add new role
 
 * api/v1/user/add-role/{username}/{newRole}
 
         Requires ADMIN token.
         Put new rol in an user.
+### User
+
+* api/v1/user/change-password
+
+        Uses change stored encoded password with
+        a new encoded password 
+
         
 
 

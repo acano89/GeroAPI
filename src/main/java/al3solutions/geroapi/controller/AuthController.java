@@ -63,7 +63,6 @@ public class AuthController {
             return ResponseEntity.badRequest().body(new MessageResponse("Email " + email + " is already taken!"));
         }
 
-
         Role role = roleRepository.findByName(ERole.ROLE_USER).get();
         Set<Role> roles = Set.of(role);
 

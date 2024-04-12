@@ -48,7 +48,7 @@ public class GeroApiApplication implements CommandLineRunner {
 		}
 
 		if (!roleRepository.existsById(4L)) {
-			roleRepository.save(new Role(3, ERole.ROLE_INACTIVE));
+			roleRepository.save(new Role(4, ERole.ROLE_INACTIVE));
 		}
 
 
