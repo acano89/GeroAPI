@@ -52,8 +52,12 @@
         Put new rol in an user.
 ### User
 
-* api/v1/user/change-password
+* api/v1/user/change-password({username)
 
+        {
+        "currentPassword": "currentPassword"
+        "newPassword": "newPassword"
+        }
         Uses change stored encoded password with
         a new encoded password 
 

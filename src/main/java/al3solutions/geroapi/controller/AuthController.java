@@ -130,8 +130,10 @@ public class AuthController {
     @PostMapping("/signout")
     public ResponseEntity<?> logoutUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+       String userName = null;
         if (!Objects.equals(principal.toString(), "anonymousUser")) {
             Long userId = ((UserDetailsImpl) principal).getId();
+             userName = ((UserDetailsImpl) principal).getUsername();
             refreshTokenService.deleteByUserId(userId);
         }
 
@@ -141,7 +143,7 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .header(HttpHeaders.SET_COOKIE, jwtRefreshCookie.toString())
-                .body(new MessageResponse("Logout completed!"));
+                .body(new MessageResponse( userName +" logout completed!"));
     }
 
     @PostMapping("/refreshtoken")

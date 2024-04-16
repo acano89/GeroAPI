@@ -2,23 +2,27 @@ package al3solutions.geroapi.controller;
 
 import al3solutions.geroapi.model.ERole;
 import al3solutions.geroapi.model.Role;
+import al3solutions.geroapi.model.Service;
 import al3solutions.geroapi.model.User;
 import al3solutions.geroapi.payload.request.ChangePasswordRequest;
+import al3solutions.geroapi.payload.request.SetServiceRequest;
 import al3solutions.geroapi.payload.response.MessageResponse;
+import al3solutions.geroapi.payload.response.UserInfoResponse;
 import al3solutions.geroapi.repository.RoleRepository;
+import al3solutions.geroapi.repository.ServiceRepository;
 import al3solutions.geroapi.repository.UserRepository;
-import al3solutions.geroapi.security.service.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -28,6 +32,7 @@ public class UserController {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ServiceRepository serviceRepository;
 
     // Add role to existing user
     @PutMapping("/add-role/{username}/{newRole}")
@@ -81,30 +86,65 @@ public class UserController {
 
     }
 
-    /** Metodo para cambiar de contraseña que no compila, TODO
-    @PostMapping("/change-password/{username}/{changedPassword}")
-    public ResponseEntity<?> changePassword(@PathVariable String username, @PathVariable String changedPassword) {
+    //Metodo para cambiar de contraseña
+    @PostMapping("/change-password/{username}")
+    public ResponseEntity<?> changePassword(@PathVariable String username, @Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
 
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        User updatedUser = userRepository.findByUsername(username)
+                .map(user -> {
+                    user.getPassword();
+                    return userRepository.save(user);
+                })
+                .orElseThrow(() -> new UsernameNotFoundException(username));
 
-        User user = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
-
-
-        if (!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), user.getPassword())) {
+        //Control de que la contraseña actual es correcta.
+        if (!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), updatedUser.getPassword())) {
             return ResponseEntity.badRequest().body(new MessageResponse("La contraseña actual es incorrecta"));
         }
 
 
-        user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
-        userRepository.save(user);
+        updatedUser.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+        userRepository.save(updatedUser);
 
         return ResponseEntity.ok(new MessageResponse("Contraseña actualizada correctamente"));
     }
-    */
+
     private static Optional<ERole> getRoleNames(String removeRole) {
         return Arrays.stream(ERole.values())
                 .filter(i -> i.name().equalsIgnoreCase(removeRole))
                 .findFirst();
+    }
+
+    //Métode per llistar els usuaris de l'aplicació. No funcional
+    @GetMapping("/users-list")
+    public ResponseEntity<List<UserInfoResponse>> usersList() {
+        List<User> users = userRepository.findAll();
+        List<UserInfoResponse> userInfoList = users.stream()
+                .map(user -> new UserInfoResponse(user.getUsername(), user.getEmail(), user.getRoles()))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok()
+                .body(userInfoList);
+    }
+
+    //Métode per guardar servei. No funcional
+    @PostMapping("/set-Service")
+    public ResponseEntity<?> setService(@RequestBody SetServiceRequest setServiceRequest){
+
+
+        Service service = Service.builder()
+                .name(setServiceRequest.getName())
+                .date(setServiceRequest.getDate())
+                .breakfast(setServiceRequest.getBreakfast())
+                .lunch(setServiceRequest.getLunch())
+                .snack(setServiceRequest.getSnack())
+                .diaperNum(setServiceRequest.getDiaperNum())
+                .shower(setServiceRequest.getShower())
+                .urination(setServiceRequest.getUrination())
+                .deposition(setServiceRequest.getDeposition())
+                .build();
+
+        serviceRepository.save(service);
+        return ResponseEntity.ok().body("Servei del dia creat correctament");
+
     }
 }
