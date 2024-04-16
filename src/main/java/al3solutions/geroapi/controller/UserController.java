@@ -7,12 +7,10 @@ import al3solutions.geroapi.payload.request.ChangePasswordRequest;
 import al3solutions.geroapi.payload.response.MessageResponse;
 import al3solutions.geroapi.repository.RoleRepository;
 import al3solutions.geroapi.repository.UserRepository;
-import al3solutions.geroapi.security.service.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -81,27 +79,29 @@ public class UserController {
 
     }
 
-    /** Metodo para cambiar de contraseña que no compila, TODO
-    @PostMapping("/change-password/{username}/{changedPassword}")
-    public ResponseEntity<?> changePassword(@PathVariable String username, @PathVariable String changedPassword) {
+    //Metodo para cambiar de contraseña
+    @PostMapping("/change-password/{username}")
+    public ResponseEntity<?> changePassword(@PathVariable String username, @Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
 
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        User updatedUser = userRepository.findByUsername(username)
+                .map(user -> {
+                    user.getPassword();
+                    return userRepository.save(user);
+                })
+                .orElseThrow(() -> new UsernameNotFoundException(username));
 
-        User user = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
-
-
-        if (!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), user.getPassword())) {
+        //Control de que la contraseña actual es correcta.
+        if (!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), updatedUser.getPassword())) {
             return ResponseEntity.badRequest().body(new MessageResponse("La contraseña actual es incorrecta"));
         }
 
 
-        user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
-        userRepository.save(user);
+        updatedUser.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+        userRepository.save(updatedUser);
 
         return ResponseEntity.ok(new MessageResponse("Contraseña actualizada correctamente"));
     }
-    */
+
     private static Optional<ERole> getRoleNames(String removeRole) {
         return Arrays.stream(ERole.values())
                 .filter(i -> i.name().equalsIgnoreCase(removeRole))
