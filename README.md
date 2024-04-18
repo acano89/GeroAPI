@@ -50,6 +50,21 @@
 
         Requires ADMIN token.
         Put new rol in an user.
+
+#### Admin get users list
+
+* api/v1/user/users-list
+
+        Requires ADMIN token.
+        Get users list.
+
+#### Admin set Service
+
+* api/v1/user/set-Service
+
+        Requires ADMIN token.
+        Put new data in an service.
+
 ### User
 
 * api/v1/user/change-password({username)

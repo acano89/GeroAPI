@@ -10,5 +10,5 @@ public interface ServiceRepository extends JpaRepository<Service, Long> {
 
     Optional<Service> findByName(String name);
 
-    Optional<Service> findByDate(Date date);
+    //Optional<Service> findByDate(Date date);
 }

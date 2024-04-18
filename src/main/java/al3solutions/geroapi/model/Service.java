@@ -3,8 +3,9 @@ package al3solutions.geroapi.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @AllArgsConstructor
@@ -23,7 +24,8 @@ public class Service {
     private String name;
 
     @NotBlank
-    private Date date;
+    @CreationTimestamp
+    private String date;
 
     private String breakfast;
 

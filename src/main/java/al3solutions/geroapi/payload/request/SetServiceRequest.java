@@ -1,5 +1,6 @@
 package al3solutions.geroapi.payload.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +17,7 @@ public class SetServiceRequest {
     private String name;
 
     @NotBlank
-    private Date date;
+    private String date;
 
     private String breakfast;
 

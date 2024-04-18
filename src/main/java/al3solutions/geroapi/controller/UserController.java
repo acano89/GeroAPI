@@ -117,6 +117,7 @@ public class UserController {
 
     //Métode per llistar els usuaris de l'aplicació. No funcional
     @GetMapping("/users-list")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<UserInfoResponse>> usersList() {
         List<User> users = userRepository.findAll();
         List<UserInfoResponse> userInfoList = users.stream()
@@ -128,7 +129,8 @@ public class UserController {
 
     //Métode per guardar servei. No funcional
     @PostMapping("/set-Service")
-    public ResponseEntity<?> setService(@RequestBody SetServiceRequest setServiceRequest){
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> setService(@Valid @RequestBody SetServiceRequest setServiceRequest){
 
 
         Service service = Service.builder()
@@ -144,7 +146,7 @@ public class UserController {
                 .build();
 
         serviceRepository.save(service);
-        return ResponseEntity.ok().body("Servei del dia creat correctament");
+        return ResponseEntity.ok().body(service);
 
     }
 }
