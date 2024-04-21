@@ -5,8 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDateTime;
-
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -33,15 +31,12 @@ public class Service {
 
     private String snack;
 
-    @NotBlank
     private int diaperNum;
 
     private String shower;
 
-    @NotBlank
     private int urination;
 
-    @NotBlank
     private int deposition;
 
 }

@@ -44,28 +44,30 @@
         Uses stored refresh token to generate a new 
         JWT token when the current one is expired.
 
-#### Admin add new role
+### User;
+
+#### Admin user add new role
 
 * api/v1/user/add-role/{username}/{newRole}
 
         Requires ADMIN token.
         Put new rol in an user.
 
-#### Admin get users list
+#### Admin user get DDBB's users list
 
 * api/v1/user/users-list
 
         Requires ADMIN token.
         Get users list.
 
-#### Admin set Service
+#### Admin/Care user sets a Service
 
 * api/v1/user/set-Service
 
         Requires ADMIN token.
         Put new data in an service.
 
-### User
+### User change the password
 
 * api/v1/user/change-password({username)
 

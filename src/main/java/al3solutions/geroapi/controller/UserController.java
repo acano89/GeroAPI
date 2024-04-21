@@ -7,7 +7,7 @@ import al3solutions.geroapi.model.User;
 import al3solutions.geroapi.payload.request.ChangePasswordRequest;
 import al3solutions.geroapi.payload.request.SetServiceRequest;
 import al3solutions.geroapi.payload.response.MessageResponse;
-import al3solutions.geroapi.payload.response.UserInfoResponse;
+import al3solutions.geroapi.payload.response.UsersListResponse;
 import al3solutions.geroapi.repository.RoleRepository;
 import al3solutions.geroapi.repository.ServiceRepository;
 import al3solutions.geroapi.repository.UserRepository;
@@ -116,12 +116,12 @@ public class UserController {
     }
 
     //Métode per llistar els usuaris de l'aplicació. No funcional
-    @GetMapping("/users-list")
+    @PostMapping("/users-list")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<List<UserInfoResponse>> usersList() {
+    public ResponseEntity<List<UsersListResponse>> usersList() {
         List<User> users = userRepository.findAll();
-        List<UserInfoResponse> userInfoList = users.stream()
-                .map(user -> new UserInfoResponse(user.getUsername(), user.getEmail(), user.getRoles()))
+        List<UsersListResponse> userInfoList = users.stream()
+                .map(user -> new UsersListResponse(user.getId(), user.getUsername(), user.getEmail(), user.getRoles()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok()
                 .body(userInfoList);
