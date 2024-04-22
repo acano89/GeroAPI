@@ -21,7 +21,6 @@ public class Service {
     @NotBlank
     private String name;
 
-    @NotBlank
     @CreationTimestamp
     private String date;
 

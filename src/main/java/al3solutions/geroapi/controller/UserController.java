@@ -1,13 +1,12 @@
 package al3solutions.geroapi.controller;
 
-import al3solutions.geroapi.model.ERole;
-import al3solutions.geroapi.model.Role;
-import al3solutions.geroapi.model.Service;
-import al3solutions.geroapi.model.User;
+import al3solutions.geroapi.model.*;
 import al3solutions.geroapi.payload.request.ChangePasswordRequest;
+import al3solutions.geroapi.payload.request.SetFamiliarRequest;
 import al3solutions.geroapi.payload.request.SetServiceRequest;
 import al3solutions.geroapi.payload.response.MessageResponse;
 import al3solutions.geroapi.payload.response.UsersListResponse;
+import al3solutions.geroapi.repository.FamiliarRepository;
 import al3solutions.geroapi.repository.RoleRepository;
 import al3solutions.geroapi.repository.ServiceRepository;
 import al3solutions.geroapi.repository.UserRepository;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -33,6 +33,7 @@ public class UserController {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final ServiceRepository serviceRepository;
+    private final FamiliarRepository familiarRepository;
 
     // Add role to existing user
     @PutMapping("/add-role/{username}/{newRole}")
@@ -115,7 +116,7 @@ public class UserController {
                 .findFirst();
     }
 
-    //Métode per llistar els usuaris de l'aplicació. No funcional
+    //Métode per llistar els usuaris de l'aplicació.
     @PostMapping("/users-list")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<UsersListResponse>> usersList() {
@@ -127,15 +128,13 @@ public class UserController {
                 .body(userInfoList);
     }
 
-    //Métode per guardar servei. No funcional
+    //Métode per guardar servei.
     @PostMapping("/set-Service")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> setService(@Valid @RequestBody SetServiceRequest setServiceRequest){
 
-
         Service service = Service.builder()
                 .name(setServiceRequest.getName())
-                .date(setServiceRequest.getDate())
                 .breakfast(setServiceRequest.getBreakfast())
                 .lunch(setServiceRequest.getLunch())
                 .snack(setServiceRequest.getSnack())
@@ -148,5 +147,27 @@ public class UserController {
         serviceRepository.save(service);
         return ResponseEntity.ok().body(service);
 
+    }
+
+    //Métode per crear familiar resident
+
+    @PostMapping("/set-Familiar")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> setFamiliar(@Valid @RequestBody SetFamiliarRequest setFamiliarRequest){
+
+        Familiar familiar = Familiar.builder()
+                .name(setFamiliarRequest.getName())
+                .familiarsUserId((Set<User>) setFamiliarRequest.getFamiliarUser())
+                .familiarMail(setFamiliarRequest.getFamiliarMail())
+                .state(setFamiliarRequest.getState())
+                .reason(setFamiliarRequest.getReason())
+                .place(setFamiliarRequest.getPlace())
+                .dayTrip(setFamiliarRequest.getDayTrip())
+                .shower(setFamiliarRequest.getShower())
+                .pickup(setFamiliarRequest.getPickup())
+                .build();
+
+        familiarRepository.save(familiar);
+        return ResponseEntity.ok().body(familiar);
     }
 }

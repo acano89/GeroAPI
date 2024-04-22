@@ -13,9 +13,6 @@ public class SetServiceRequest {
     @NotBlank
     private String name;
 
-    @NotBlank
-    private String date;
-
     private String breakfast;
 
     private String lunch;
