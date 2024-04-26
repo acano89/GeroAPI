@@ -1,9 +1,7 @@
 package al3solutions.geroapi.controller;
 
 import al3solutions.geroapi.model.*;
-import al3solutions.geroapi.payload.request.ChangePasswordRequest;
-import al3solutions.geroapi.payload.request.SetFamiliarRequest;
-import al3solutions.geroapi.payload.request.SetServiceRequest;
+import al3solutions.geroapi.payload.request.*;
 import al3solutions.geroapi.payload.response.MessageResponse;
 import al3solutions.geroapi.payload.response.UsersListResponse;
 import al3solutions.geroapi.repository.FamiliarRepository;
@@ -18,11 +16,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.sql.Date;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -100,14 +96,28 @@ public class UserController {
 
         //Control de que la contraseña actual es correcta.
         if (!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), updatedUser.getPassword())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("La contraseña actual es incorrecta"));
+            return ResponseEntity.badRequest().body(new MessageResponse("La contrasenya actual es incorrecta"));
         }
-
 
         updatedUser.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
         userRepository.save(updatedUser);
 
-        return ResponseEntity.ok(new MessageResponse("Contraseña actualizada correctamente"));
+        return ResponseEntity.ok(new MessageResponse("Contrasenya actualitzada correctament"));
+    }
+
+    //Not work TODO
+    @PostMapping("/change-name")
+    public ResponseEntity<?> changeUsername(@Valid @RequestBody ChangeUsernameRequest changeUsernameRequest){
+        User updatedUser = userRepository.findByUsername(changeUsernameRequest.getCurrentName())
+                .orElseThrow(()-> new UsernameNotFoundException(changeUsernameRequest.getCurrentName()));
+
+        if(!userRepository.findByUsername(changeUsernameRequest.getNewName()).isPresent()){
+            updatedUser.setUsername(changeUsernameRequest.getNewName());
+            userRepository.save(updatedUser);
+            return ResponseEntity.ok(new MessageResponse("Nom actualitzat correctament"));
+        }
+
+        return ResponseEntity.ok(new MessageResponse("El nom ja existeix."));
     }
 
     private static Optional<ERole> getRoleNames(String removeRole) {
@@ -146,8 +156,23 @@ public class UserController {
 
         serviceRepository.save(service);
         return ResponseEntity.ok().body(service);
-
     }
+
+    //Métode per consultar un servei.
+    @PostMapping("/get-Service")
+    public ResponseEntity<?> getService(@Valid @RequestBody GetServiceRequest getServiceRequest){
+
+        // Extraer la fecha y el ID del usuario familiar de la solicitud
+        Date date = (Date) getServiceRequest.getDate();
+        String name = getServiceRequest.getName();
+
+        // Buscar los servicios por fecha y usuario en la base de datos
+        List<Service> services = serviceRepository.findByDateAndName(date, name);
+
+        // Devolver los servicios encontrados como respuesta
+        return ResponseEntity.ok().body(services);
+    }
+
 
     //Métode per crear familiar resident
 

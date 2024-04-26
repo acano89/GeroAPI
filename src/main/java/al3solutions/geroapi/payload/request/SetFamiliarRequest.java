@@ -14,14 +14,11 @@ public class SetFamiliarRequest {
     @NotBlank
     private String name;
 
-
     private User familiarUser;
 
     private String familiarMail;
 
-
     private String state;
-
 
     private String reason;
 

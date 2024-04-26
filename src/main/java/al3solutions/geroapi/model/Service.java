@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.sql.Date;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,8 +23,8 @@ public class Service {
     @NotBlank
     private String name;
 
-    @CreationTimestamp
-    private String date;
+    // "yyyy-MM-dd" Format
+    private Date date;
 
     private String breakfast;
 

@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.sql.Date;
+
 @Getter
 @Setter
 @Builder
@@ -12,6 +14,8 @@ public class SetServiceRequest {
 
     @NotBlank
     private String name;
+
+    private Date date;
 
     private String breakfast;
 
