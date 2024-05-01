@@ -31,7 +31,7 @@ public class UserController {
     private final ServiceRepository serviceRepository;
     private final FamiliarRepository familiarRepository;
 
-    // Add role to existing user
+    //Afegeix Role a un usuari existent
     @PutMapping("/add-role/{username}/{newRole}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> giveRoleToUser(@PathVariable String username, @PathVariable String newRole) {
@@ -57,7 +57,7 @@ public class UserController {
 
     }
 
-
+    //Esborra Role a un usuari existent
     @PutMapping("/remove-role/{username}/{removeRole}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> removeRoleFromUser(@PathVariable String username, @PathVariable String removeRole) {
@@ -83,7 +83,7 @@ public class UserController {
 
     }
 
-    //Metodo para cambiar de contraseña
+    //Modifica la contrasenya a un usuari existent
     @PostMapping("/change-password/{username}")
     public ResponseEntity<?> changePassword(@PathVariable String username, @Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
 
@@ -105,7 +105,7 @@ public class UserController {
         return ResponseEntity.ok(new MessageResponse("Contrasenya actualitzada correctament"));
     }
 
-    //Not work TODO
+    //Modifica el nom a un usuari existent. Not work TODO
     @PostMapping("/change-name")
     public ResponseEntity<?> changeUsername(@Valid @RequestBody ChangeUsernameRequest changeUsernameRequest){
         User updatedUser = userRepository.findByUsername(changeUsernameRequest.getCurrentName())
@@ -126,7 +126,7 @@ public class UserController {
                 .findFirst();
     }
 
-    //Métode per llistar els usuaris de l'aplicació.
+    //Llista els usuaris de l'aplicació
     @PostMapping("/users-list")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<UsersListResponse>> usersList() {
@@ -138,40 +138,7 @@ public class UserController {
                 .body(userInfoList);
     }
 
-    //Métode per guardar servei.
-    @PostMapping("/set-Service")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> setService(@Valid @RequestBody SetServiceRequest setServiceRequest){
 
-        Service service = Service.builder()
-                .name(setServiceRequest.getName())
-                .breakfast(setServiceRequest.getBreakfast())
-                .lunch(setServiceRequest.getLunch())
-                .snack(setServiceRequest.getSnack())
-                .diaperNum(setServiceRequest.getDiaperNum())
-                .shower(setServiceRequest.getShower())
-                .urination(setServiceRequest.getUrination())
-                .deposition(setServiceRequest.getDeposition())
-                .build();
-
-        serviceRepository.save(service);
-        return ResponseEntity.ok().body(service);
-    }
-
-    //Métode per consultar un servei.
-    @PostMapping("/get-Service")
-    public ResponseEntity<?> getService(@Valid @RequestBody GetServiceRequest getServiceRequest){
-
-        // Extraer la fecha y el ID del usuario familiar de la solicitud
-        Date date = (Date) getServiceRequest.getDate();
-        String name = getServiceRequest.getName();
-
-        // Buscar los servicios por fecha y usuario en la base de datos
-        List<Service> services = serviceRepository.findByDateAndName(date, name);
-
-        // Devolver los servicios encontrados como respuesta
-        return ResponseEntity.ok().body(services);
-    }
 
 
     //Métode per crear familiar resident
