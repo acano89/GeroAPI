@@ -8,6 +8,10 @@ import java.util.Optional;
 public interface FamiliarRepository extends JpaRepository<Familiar,Long> {
     Optional<Familiar> findByName (String name);
 
+    Optional<Familiar> findByState (String state);
+    Optional<Familiar> findByFamiliarsUserId(Long familiarsUserId);
+
     Boolean existsByName(String name);
+
 
 }

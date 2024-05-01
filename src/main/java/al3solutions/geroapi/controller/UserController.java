@@ -1,7 +1,11 @@
 package al3solutions.geroapi.controller;
 
-import al3solutions.geroapi.model.*;
-import al3solutions.geroapi.payload.request.*;
+import al3solutions.geroapi.model.ERole;
+import al3solutions.geroapi.model.Role;
+import al3solutions.geroapi.model.User;
+import al3solutions.geroapi.payload.request.ChangeMailRequest;
+import al3solutions.geroapi.payload.request.ChangePasswordRequest;
+import al3solutions.geroapi.payload.request.ChangeUsernameRequest;
 import al3solutions.geroapi.payload.response.MessageResponse;
 import al3solutions.geroapi.payload.response.UsersListResponse;
 import al3solutions.geroapi.repository.FamiliarRepository;
@@ -16,9 +20,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import java.sql.Date;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -28,8 +33,6 @@ public class UserController {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ServiceRepository serviceRepository;
-    private final FamiliarRepository familiarRepository;
 
     //Afegeix Role a un usuari existent
     @PutMapping("/add-role/{username}/{newRole}")
@@ -120,6 +123,18 @@ public class UserController {
         return ResponseEntity.ok(new MessageResponse("El nom ja existeix."));
     }
 
+    //Modifica l'email d'un usuari existent
+    @PostMapping("/change-email")
+    public ResponseEntity<?> changeMail(@Valid @RequestBody ChangeMailRequest changeMailRequest){
+            User updatedUser = userRepository.findByUsername(changeMailRequest.getUsername())
+                    .orElseThrow(()-> new UsernameNotFoundException(changeMailRequest.getUsername()));
+
+            updatedUser.setEmail(changeMailRequest.getNewEmail());
+            userRepository.save(updatedUser);
+
+        return ResponseEntity.ok(new MessageResponse("Email canviat correctament"));
+    }
+
     private static Optional<ERole> getRoleNames(String removeRole) {
         return Arrays.stream(ERole.values())
                 .filter(i -> i.name().equalsIgnoreCase(removeRole))
@@ -138,28 +153,4 @@ public class UserController {
                 .body(userInfoList);
     }
 
-
-
-
-    //Métode per crear familiar resident
-
-    @PostMapping("/set-Familiar")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> setFamiliar(@Valid @RequestBody SetFamiliarRequest setFamiliarRequest){
-
-        Familiar familiar = Familiar.builder()
-                .name(setFamiliarRequest.getName())
-                .familiarsUserId((Set<User>) setFamiliarRequest.getFamiliarUser())
-                .familiarMail(setFamiliarRequest.getFamiliarMail())
-                .state(setFamiliarRequest.getState())
-                .reason(setFamiliarRequest.getReason())
-                .place(setFamiliarRequest.getPlace())
-                .dayTrip(setFamiliarRequest.getDayTrip())
-                .shower(setFamiliarRequest.getShower())
-                .pickup(setFamiliarRequest.getPickup())
-                .build();
-
-        familiarRepository.save(familiar);
-        return ResponseEntity.ok().body(familiar);
-    }
 }

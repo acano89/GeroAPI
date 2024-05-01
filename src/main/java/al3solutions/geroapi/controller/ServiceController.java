@@ -40,12 +40,12 @@ public class ServiceController {
         return ResponseEntity.ok().body(service);
     }
 
-    //Consultar un servei amb data y nom de Familiar
+    //Consulta un servei amb data y nom de Familiar
     @PostMapping("/get-Service")
     public ResponseEntity<?> getService(@Valid @RequestBody GetServiceRequest getServiceRequest){
 
-        // Extraer la fecha y el ID del usuario familiar de la solicitud
-        Date date = (Date) getServiceRequest.getDate();
+        //Extreu la fecha y el nom
+        Date date = getServiceRequest.getDate();
         String name = getServiceRequest.getName();
 
         // Buscar los servicios por fecha y usuario en la base de datos
