@@ -11,5 +11,5 @@ import lombok.Setter;
 public class GetFamiliarRequest {
 
     private String name;
-    private Long familiarsUserId;
+    private String familiarsUserName;
 }

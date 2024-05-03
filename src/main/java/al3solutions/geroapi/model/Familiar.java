@@ -25,11 +25,9 @@ public class Familiar {
     private String name;
 
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "familiars_user",
-            joinColumns = @JoinColumn(name = "familiar_User_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> familiarsUserId = new HashSet<>();
+    @NotBlank
+    @Size(max = 20)
+    private String familiarsUserName;
 
 
     @Size(max = 50)

@@ -14,7 +14,7 @@ public class SetFamiliarRequest {
     @NotBlank
     private String name;
 
-    private User familiarUser;
+    private String familiarsUserName;
 
     private String familiarMail;
 

@@ -4,6 +4,7 @@ import al3solutions.geroapi.model.Familiar;
 import al3solutions.geroapi.model.User;
 import al3solutions.geroapi.payload.request.GetFamiliarRequest;
 import al3solutions.geroapi.payload.request.SetFamiliarRequest;
+import al3solutions.geroapi.payload.response.MessageResponse;
 import al3solutions.geroapi.repository.FamiliarRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.Set;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -29,7 +30,7 @@ public class FamiliarController {
 
         Familiar familiar = Familiar.builder()
                 .name(setFamiliarRequest.getName())
-                .familiarsUserId((Set<User>) setFamiliarRequest.getFamiliarUser())
+                .familiarsUserName(setFamiliarRequest.getFamiliarsUserName())
                 .familiarMail(setFamiliarRequest.getFamiliarMail())
                 .state(setFamiliarRequest.getState())
                 .reason(setFamiliarRequest.getReason())
@@ -44,12 +45,20 @@ public class FamiliarController {
     }
 
     //TODO
+    @PostMapping("/get-familiar")
     public ResponseEntity<?> getFamiliar(@Valid @RequestBody GetFamiliarRequest getFamiliarRequest){
 
-        Optional<Familiar> familiar = familiarRepository.findByName(getFamiliarRequest.getName());
+        String name = getFamiliarRequest.getName();
+        String familiarsUserName = getFamiliarRequest.getFamiliarsUserName();
 
-        if (familiar.isPresent()){
+        List<Familiar> familiars = familiarRepository.findByNameAndFamiliarsUserName(name, familiarsUserName);
 
+        if (!familiars.isEmpty()){
+            return ResponseEntity.ok().body(familiars);
+        }else {
+            return ResponseEntity.badRequest().body(new MessageResponse("No hi ha relació entre "+familiarsUserName
+                    + " i "+ name));
         }
+
     }
 }
