@@ -1,5 +1,6 @@
 package al3solutions.geroapi.controller;
 
+import al3solutions.geroapi.model.Familiar;
 import al3solutions.geroapi.model.Service;
 import al3solutions.geroapi.payload.request.GetServiceRequest;
 import al3solutions.geroapi.payload.request.SetServiceRequest;

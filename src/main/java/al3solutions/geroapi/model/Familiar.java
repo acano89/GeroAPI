@@ -15,6 +15,7 @@ import java.util.Set;
 @Builder
 @Getter
 @Setter
+@Table(name = "familiar")
 public class Familiar {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
