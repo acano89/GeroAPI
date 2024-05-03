@@ -23,7 +23,7 @@ public class FamiliarController {
 
     private final FamiliarRepository familiarRepository;
 
-    //Métode per crear familiar resident
+    //Ingresa dades de familiar resident
     @PostMapping("/set-Familiar")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> setFamiliar(@Valid @RequestBody SetFamiliarRequest setFamiliarRequest){
@@ -44,7 +44,7 @@ public class FamiliarController {
         return ResponseEntity.ok().body(familiar);
     }
 
-    //TODO
+    //Regresa dades de familiar resident amb nom de resident i de familiar
     @PostMapping("/get-familiar")
     public ResponseEntity<?> getFamiliar(@Valid @RequestBody GetFamiliarRequest getFamiliarRequest){
 
