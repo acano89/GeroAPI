@@ -22,7 +22,6 @@ public class SetFamiliarRequest {
 
     private String reason;
 
-
     private String place;
 
     private String dayTrip;

@@ -16,7 +16,7 @@
 
 * /api/v1/auth/signup
 
-        Create new user with the follow items:
+        Create new user with the follow body:
 
         {
             "username": "username"
@@ -28,7 +28,7 @@
 
 * api/v1/auth/signin
 
-        Login a user with the follow items:
+        Login a user with the follow body:
         {
             "username": "username"
             "password": "password"
@@ -67,36 +67,40 @@
 
 * api/v1/user/change-name
 
+        Change user's name to another with the follow body.
+
         {
         "currentName": "currentName"
         "newName": "newName"
         }
 
-        Change name to another, needs current and new name.
+        
 
 #### User changes the password
 
 * api/v1/user/change-password/{username}
     
+        Change encoded password to another encoded password,
+        with the follow body, needs the username.
+
         {
         "currentPassword": "currentPassword"
         "newPassword": "newPassword"
         }
 
-        Change encoded password to another encoded password,
-        needs current and new password, and the username.
+        
 
 #### User changes the email
 
 * api/v1/user/change-email
+        
+      Change the email from the user with the follow body.
 
-        {
-        "username": "currentPassword"
-        "newEmail": "newEmail"
-        }
+      {
+      "username": "currentPassword"
+      "newEmail": "newEmail"
+      }
 
-        Change the email from the user, needs username
-        and new email.
 
 #### Admin_user get a users list
 
@@ -111,6 +115,8 @@
 
 * api/v1/service/set-Service
 
+      Create a service with the follow body.
+
       {
       "name": "name",
       "breakfast": "breakfast",
@@ -121,25 +127,52 @@
       "urination": urination,
       "deposition": deposition
       }
-* 
-       Put new data in an service.
+
+       
 
 ### User get a service
 
 * api/v1/service/get-Service
+
+        User gets info of the service with the follow body.
 
         {
         "date": date,
         "name": "name",
         }
 
-        Uses gets info of the service with the name and date.
 
 ### Familiar:
 
 #### Admin_user set a Familiar
 
-        
+* api/v1/familiar/set-Familiar
+
+        Admin_user create a new Familiar with the follow body
+
+        {
+        "name": "name",
+        "familiarsUserName": "familiarsUserName",
+        "familiarMail": "familiarMail",
+        "state": "state",
+        "reason": "reason",
+        "place": "place",
+        "state": "dayTrip",
+        "reason": "shower",
+        "place": "pickup"
+        }
+
+
+#### User get a Familiar
+
+* api/v1/familiar/get-Familiar
+
+         User get Familiar's info with the follow body
+
+        {
+        "name": "name",
+        "familiarsUserName": "familiarsUserName",
+        }
 
 
     
