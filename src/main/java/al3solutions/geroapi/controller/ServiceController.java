@@ -1,6 +1,5 @@
 package al3solutions.geroapi.controller;
 
-import al3solutions.geroapi.model.Familiar;
 import al3solutions.geroapi.model.Service;
 import al3solutions.geroapi.payload.request.GetServiceRequest;
 import al3solutions.geroapi.payload.request.SetServiceRequest;
@@ -11,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Date;
 import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -28,6 +26,7 @@ public class ServiceController {
 
         Service service = Service.builder()
                 .name(setServiceRequest.getName())
+                .date(setServiceRequest.getDate())
                 .breakfast(setServiceRequest.getBreakfast())
                 .lunch(setServiceRequest.getLunch())
                 .snack(setServiceRequest.getSnack())
@@ -46,7 +45,7 @@ public class ServiceController {
     public ResponseEntity<?> getService(@Valid @RequestBody GetServiceRequest getServiceRequest){
 
         //Extreu la fecha y el nom
-        Date date = getServiceRequest.getDate();
+        String date = getServiceRequest.getDate();
         String name = getServiceRequest.getName();
 
         // Buscar los servicios por fecha y usuario en la base de datos

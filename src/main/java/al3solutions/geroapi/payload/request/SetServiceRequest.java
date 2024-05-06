@@ -1,12 +1,8 @@
 package al3solutions.geroapi.payload.request;
 
-import al3solutions.geroapi.model.Familiar;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.sql.Date;
 
 @Getter
 @Setter
@@ -16,7 +12,7 @@ public class SetServiceRequest {
 
     private String name;
 
-    private Date date;
+    private String date;
 
     private String breakfast;
 

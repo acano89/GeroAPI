@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
-import java.sql.Date;
-
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,7 +21,7 @@ public class Service {
     private String name;
 
     // "yyyy-MM-dd" Format
-    private Date date;
+    private String date;
 
     private String breakfast;
 
