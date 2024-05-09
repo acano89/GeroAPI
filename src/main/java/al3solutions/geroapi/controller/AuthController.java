@@ -25,6 +25,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -143,7 +144,7 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .header(HttpHeaders.SET_COOKIE, jwtRefreshCookie.toString())
-                .body(new MessageResponse( userName +" logout completed!"));
+                .body(new MessageResponse("Adeu "+ userName +", fins aviat!"));
     }
 
     @PostMapping("/refreshtoken")
@@ -167,5 +168,46 @@ public class AuthController {
 
         return ResponseEntity.badRequest().body(new MessageResponse("Refresh Token is empty!"));
     }
+
+    //Consulta de dades
+    @PostMapping("/info")
+    public ResponseEntity<?> consultInfo() {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        Long id = null;
+        String userName = null;
+        String email = null;
+        List<String> roles = null;
+
+        if (authentication != null && authentication.isAuthenticated()){
+            Object principal = authentication.getPrincipal();
+
+            if (principal instanceof UserDetails){
+
+                UserDetailsImpl userDetails = (UserDetailsImpl) principal;
+
+                id = userDetails.getId();
+                userName = userDetails.getUsername();
+                email = ((UserDetailsImpl) principal).getEmail();
+                roles = userDetails.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.toList());
+            }
+        } else {
+            // Si el usuario no se encuentra, devolver HttpStatus 404 (Not Found)
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok()
+                .body(UserInfoResponse
+                        .builder()
+                        .id(id)
+                        .username(userName)
+                        .email(email)
+                        .roles(roles)
+                        .build());
+    }
 }
+
 

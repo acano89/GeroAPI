@@ -7,7 +7,6 @@ import al3solutions.geroapi.repository.ServiceRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +20,6 @@ public class ServiceController {
 
     //Ingresa un servei.
     @PostMapping("/set-Service")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> setService(@Valid @RequestBody SetServiceRequest setServiceRequest){
 
         Service service = Service.builder()

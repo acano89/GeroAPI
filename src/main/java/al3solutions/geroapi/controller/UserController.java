@@ -6,11 +6,11 @@ import al3solutions.geroapi.model.User;
 import al3solutions.geroapi.payload.request.ChangeMailRequest;
 import al3solutions.geroapi.payload.request.ChangePasswordRequest;
 import al3solutions.geroapi.payload.request.ChangeUsernameRequest;
+import al3solutions.geroapi.payload.request.UpdateUserRequest;
 import al3solutions.geroapi.payload.response.MessageResponse;
+import al3solutions.geroapi.payload.response.UserInfoResponse;
 import al3solutions.geroapi.payload.response.UsersListResponse;
-import al3solutions.geroapi.repository.FamiliarRepository;
 import al3solutions.geroapi.repository.RoleRepository;
-import al3solutions.geroapi.repository.ServiceRepository;
 import al3solutions.geroapi.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +20,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -108,20 +109,24 @@ public class UserController {
         return ResponseEntity.ok(new MessageResponse("Contrasenya actualitzada correctament"));
     }
 
-    //Modifica el nom a un usuari existent. Not work TODO
+    //Modifica el nom del propi usuari
     @PostMapping("/change-name")
     public ResponseEntity<?> changeUsername(@Valid @RequestBody ChangeUsernameRequest changeUsernameRequest){
         User updatedUser = userRepository.findByUsername(changeUsernameRequest.getCurrentName())
                 .orElseThrow(()-> new UsernameNotFoundException(changeUsernameRequest.getCurrentName()));
 
-        if(!userRepository.findByUsername(changeUsernameRequest.getNewName()).isPresent()){
+        Optional<User> newNameUser = userRepository.findByUsername(changeUsernameRequest.getNewName());
+
+        if(newNameUser.isEmpty()){
             updatedUser.setUsername(changeUsernameRequest.getNewName());
             userRepository.save(updatedUser);
             return ResponseEntity.ok(new MessageResponse("Nom actualitzat correctament"));
+        }else {
+            return ResponseEntity.ok(new MessageResponse("El nom ja existeix."));
         }
-
-        return ResponseEntity.ok(new MessageResponse("El nom ja existeix."));
     }
+
+
 
     //Modifica l'email d'un usuari existent
     @PostMapping("/change-email")
@@ -147,10 +152,69 @@ public class UserController {
     public ResponseEntity<List<UsersListResponse>> usersList() {
         List<User> users = userRepository.findAll();
         List<UsersListResponse> userInfoList = users.stream()
-                .map(user -> new UsersListResponse(user.getId(), user.getUsername(), user.getEmail(), user.getRoles()))
+                .map(user -> new UsersListResponse(user.getId(), user.getUsername(),
+                        user.getEmail(), user.getRoles()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok()
                 .body(userInfoList);
     }
 
+    @DeleteMapping("/delete/{username}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> deleteUser(@PathVariable String username){
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(()-> new UsernameNotFoundException(username));
+
+        userRepository.delete(user);
+        return ResponseEntity.ok(new MessageResponse("Usuari "+username +" eliminat correctament"));
+    }
+
+    @PostMapping("/updateUser/{username}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> updateUser(@Valid @RequestBody UpdateUserRequest updateUserRequest,@PathVariable String username){
+
+        User updatedUser = userRepository.findByUsername(username)
+                .orElseThrow(()-> new UsernameNotFoundException(username));
+
+        if(!userRepository.existsByUsername(updateUserRequest.getNewName())){
+            updatedUser.setUsername(updateUserRequest.getNewName());
+        }else {
+            return ResponseEntity.ok(new MessageResponse("El nom ja existeix."));
+        }
+
+        if (!userRepository.existsByEmail(updateUserRequest.getNewEmail())){
+            updatedUser.setEmail(updateUserRequest.getNewEmail());
+        } else {
+            return ResponseEntity.ok(new MessageResponse("El mail ja existeix per un altre usuari."));
+
+        }
+
+        userRepository.save(updatedUser);
+
+        return ResponseEntity.ok(new MessageResponse("Usuari "+username +" modificat correctament"));
+    }
+
+    @PostMapping("/userInfo/{username}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> userInfo(@PathVariable String username){
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(()-> new UsernameNotFoundException(username));;
+
+        List<String> roles = new ArrayList<>();
+        for (Role role : user.getRoles()) {
+            ERole name = role.getName();
+            roles.add(String.valueOf(name));
+        }
+
+        return ResponseEntity.ok()
+                .body(UserInfoResponse
+                        .builder()
+                        .id(user.getId())
+                        .username(user.getUsername())
+                        .email(user.getEmail())
+                        .roles(roles)
+                        .build());
+    }
 }

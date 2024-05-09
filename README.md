@@ -47,6 +47,12 @@
         Uses stored refresh token to generate a new 
         JWT token when the current one is expired.
 
+#### Consult info from authenticated user:
+
+* /api/v1/auth/info
+
+        User get info stored to consult.
+
 ### User:
 
 #### Admin_user add new role
@@ -108,6 +114,34 @@
 
         Requires ADMIN token.
         Get users list.
+
+#### Admin_user delete a user
+
+* api/v1/user/delete/{username}
+
+        Requipres ADMIN token.
+        Admin user delete stored in ddbb.
+
+#### Admin_user update selected user info.
+
+* api/v1/user/updateUser/{username}
+
+        Requires ADMIN token.
+        Admin update name and mail info stored.
+        Uses the follow body:
+
+        {
+          "newName": "newName",
+          "newEmail": "newEmail"
+        }
+
+#### Admin_user consult selected user info.
+
+* api/v1/user/infoUser/{username}
+
+        Requires ADMIN token.
+        Admin user consults info stored from
+        selected user.
 
 ### Service:
 
