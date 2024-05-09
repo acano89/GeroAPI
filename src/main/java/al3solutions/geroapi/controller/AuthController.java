@@ -195,7 +195,6 @@ public class AuthController {
                         .collect(Collectors.toList());
             }
         } else {
-            // Si el usuario no se encuentra, devolver HttpStatus 404 (Not Found)
             return ResponseEntity.notFound().build();
         }
 
