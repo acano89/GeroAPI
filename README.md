@@ -208,5 +208,29 @@
         "familiarsUserName": "familiarsUserName",
         }
 
+#### User update a Familiar
 
-    
+* api/v1/familiar/updateFamiliar/{name}
+
+        User update Familiar's data.
+        Requieres name of Familiar
+        Requires the followed body:
+
+        {
+        "name": "name",
+        "familiarsUserName": "familiarsUserName",
+        "familiarMail":"familiarMail",
+        "state": "state",
+        "reason": "reason",
+        "place": "place",
+        "dayTrip": "dayTrip",
+        "shower": "shower",
+        "pickup": "pickup"
+        }
+
+#### User delete a Familiar
+
+* api/v1/familiar/deleteFamiliar/{name}
+
+      A user deletes a Familiar.
+      Requires familiar name.

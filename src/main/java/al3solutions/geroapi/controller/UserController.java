@@ -12,10 +12,14 @@ import al3solutions.geroapi.payload.response.UserInfoResponse;
 import al3solutions.geroapi.payload.response.UsersListResponse;
 import al3solutions.geroapi.repository.RoleRepository;
 import al3solutions.geroapi.repository.UserRepository;
+import al3solutions.geroapi.security.service.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -88,44 +92,74 @@ public class UserController {
     }
 
     //Modifica la contrasenya a un usuari existent
-    @PostMapping("/change-password/{username}")
-    public ResponseEntity<?> changePassword(@PathVariable String username, @Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
 
-        User updatedUser = userRepository.findByUsername(username)
-                .map(user -> {
-                    user.getPassword();
-                    return userRepository.save(user);
-                })
-                .orElseThrow(() -> new UsernameNotFoundException(username));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        //Control de que la contraseña actual es correcta.
-        if (!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), updatedUser.getPassword())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("La contrasenya actual es incorrecta"));
+        if (authentication != null && authentication.isAuthenticated()){
+            Object principal = authentication.getPrincipal();
+
+            if (principal instanceof UserDetails){
+
+                UserDetailsImpl userDetails = (UserDetailsImpl) principal;
+
+                String username = userDetails.getUsername();
+                String password = userDetails.getPassword();
+
+                User updatedUser = userRepository.findByUsername(username)
+                        .orElseThrow(() -> new UsernameNotFoundException(username));
+
+                if (!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), password)) {
+                    return ResponseEntity.badRequest().body(new MessageResponse("La contrasenya actual es incorrecta"));
+                }
+
+                updatedUser.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+                userRepository.save(updatedUser);
+            }
+        } else {
+            return ResponseEntity.notFound().build();
         }
-
-        updatedUser.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
-        userRepository.save(updatedUser);
-
         return ResponseEntity.ok(new MessageResponse("Contrasenya actualitzada correctament"));
     }
 
     //Modifica el nom del propi usuari
     @PostMapping("/change-name")
-    public ResponseEntity<?> changeUsername(@Valid @RequestBody ChangeUsernameRequest changeUsernameRequest){
-        User updatedUser = userRepository.findByUsername(changeUsernameRequest.getCurrentName())
-                .orElseThrow(()-> new UsernameNotFoundException(changeUsernameRequest.getCurrentName()));
+    public ResponseEntity<?> changeUsername(@Valid @RequestBody ChangeUsernameRequest changeUsernameRequest) {
 
-        Optional<User> newNameUser = userRepository.findByUsername(changeUsernameRequest.getNewName());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if(newNameUser.isEmpty()){
-            updatedUser.setUsername(changeUsernameRequest.getNewName());
-            userRepository.save(updatedUser);
-            return ResponseEntity.ok(new MessageResponse("Nom actualitzat correctament"));
-        }else {
-            return ResponseEntity.ok(new MessageResponse("El nom ja existeix."));
+        if (authentication != null && authentication.isAuthenticated()) {
+            Object principal = authentication.getPrincipal();
+
+            if (principal instanceof UserDetails) {
+
+                UserDetailsImpl userDetails = (UserDetailsImpl) principal;
+
+                String username = userDetails.getUsername();
+
+                User updatedUser = userRepository.findByUsername(username)
+                        .orElseThrow(() -> new UsernameNotFoundException(username));
+
+                if (changeUsernameRequest.getNewName().equalsIgnoreCase(username)) {
+                    return ResponseEntity.badRequest().body(new MessageResponse("Es el mateix nom."));
+                }
+
+                if (userRepository.existsByUsername(changeUsernameRequest.getNewName())){
+                    return ResponseEntity.badRequest().body(new MessageResponse("Aquest username ja existeix"));
+                }
+
+                if (!changeUsernameRequest.getCurrentName().equalsIgnoreCase(username)){
+                    return ResponseEntity.badRequest().body(new MessageResponse("Aquest no es el teu nom actual!"));
+
+                }
+                updatedUser.setUsername(changeUsernameRequest.getNewName());
+                userRepository.save(updatedUser);
+                return ResponseEntity.ok(new MessageResponse("Nom actualitzat correctament"));
+            }
         }
+        return null;
     }
-
 
 
     //Modifica l'email d'un usuari existent
@@ -193,6 +227,24 @@ public class UserController {
         userRepository.save(updatedUser);
 
         return ResponseEntity.ok(new MessageResponse("Usuari "+username +" modificat correctament"));
+    }
+
+    @PostMapping("/updateUserPassword/{username}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> updateUserPassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest,@PathVariable String username){
+
+        User updatedUser = userRepository.findByUsername(username)
+                .orElseThrow(()-> new UsernameNotFoundException(username));
+
+        //Control de que la contraseña actual es correcta.
+        if (!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), updatedUser.getPassword())) {
+            return ResponseEntity.badRequest().body(new MessageResponse("La contrasenya actual es incorrecta"));
+        }
+
+        updatedUser.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+        userRepository.save(updatedUser);
+
+        return ResponseEntity.ok(new MessageResponse("Contrasenya actualitzada correctament"));
     }
 
     @PostMapping("/userInfo/{username}")

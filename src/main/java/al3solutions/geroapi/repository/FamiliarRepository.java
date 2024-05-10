@@ -9,11 +9,8 @@ import java.util.Optional;
 public interface FamiliarRepository extends JpaRepository<Familiar,Long> {
     Optional<Familiar> findByName (String name);
 
-    Optional<Familiar> findByState (String state);
-
     List<Familiar> findByNameAndFamiliarsUserName(String name, String familiarsUserName);
 
     Boolean existsByName(String name);
-
 
 }

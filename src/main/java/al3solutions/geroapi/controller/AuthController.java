@@ -169,7 +169,7 @@ public class AuthController {
         return ResponseEntity.badRequest().body(new MessageResponse("Refresh Token is empty!"));
     }
 
-    //Consulta de dades
+    //Consulta de dades propi usuari
     @PostMapping("/info")
     public ResponseEntity<?> consultInfo() {
 

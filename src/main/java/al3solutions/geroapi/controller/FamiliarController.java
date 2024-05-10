@@ -4,15 +4,18 @@ import al3solutions.geroapi.model.Familiar;
 import al3solutions.geroapi.model.User;
 import al3solutions.geroapi.payload.request.GetFamiliarRequest;
 import al3solutions.geroapi.payload.request.SetFamiliarRequest;
+import al3solutions.geroapi.payload.request.UpdateFamiliarRequest;
 import al3solutions.geroapi.payload.response.MessageResponse;
 import al3solutions.geroapi.repository.FamiliarRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -59,6 +62,47 @@ public class FamiliarController {
             return ResponseEntity.badRequest().body(new MessageResponse("No hi ha relació entre "+familiarsUserName
                     + " i "+ name));
         }
+    }
 
+    @PostMapping("/updateFamiliar/{name}")
+    //Modifica dades de familiar resident.
+    public ResponseEntity<?> updateFamiliar(@Valid @RequestBody UpdateFamiliarRequest updateFamiliarRequest, @PathVariable String name){
+
+
+        Optional<Familiar> toUpdate = familiarRepository.findByName(name);
+
+        if (toUpdate.isEmpty()){
+            return ResponseEntity.badRequest().body(new MessageResponse("No existeix "+ name+" encara."));
+        }
+
+        Familiar updateFamiliar = toUpdate.get();
+
+        updateFamiliar.setName(updateFamiliarRequest.getName());
+        updateFamiliar.setFamiliarsUserName(updateFamiliarRequest.getFamiliarsUserName());
+        updateFamiliar.setFamiliarMail(updateFamiliarRequest.getFamiliarMail());
+        updateFamiliar.setState(updateFamiliarRequest.getState());
+        updateFamiliar.setReason(updateFamiliarRequest.getReason());
+        updateFamiliar.setPlace(updateFamiliarRequest.getPlace());
+        updateFamiliar.setDayTrip(updateFamiliarRequest.getDayTrip());
+        updateFamiliar.setShower(updateFamiliarRequest.getShower());
+        updateFamiliar.setPickup(updateFamiliarRequest.getPickup());
+
+        familiarRepository.save(updateFamiliar);
+        return ResponseEntity.ok().body(updateFamiliar);
+    }
+
+    @DeleteMapping("/deleteFamiliar/{name}")
+    public ResponseEntity<?> deleteFamiliar (@PathVariable String name){
+
+        Optional<Familiar> optionalFamiliar  = familiarRepository.findByName(name);
+
+        if(!optionalFamiliar.isPresent()){
+            return ResponseEntity.ok(new MessageResponse("Familiar "+name +" no existeix."));
+        }
+
+        Familiar familiar = optionalFamiliar.get();
+        familiarRepository.delete(familiar);
+
+        return ResponseEntity.ok(new MessageResponse("Familiar "+name +" eliminat correctament"));
     }
 }
