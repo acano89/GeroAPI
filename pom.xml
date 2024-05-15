@@ -15,6 +15,7 @@
 	<description>GeroAPI</description>
 	<properties>
 		<java.version>17</java.version>
+		<start-class>com.cex.ssl.HttpsEnabledApplication</start-class>
 	</properties>
 	<dependencies>
 		<dependency>

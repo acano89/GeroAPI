@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface ServiceRepository extends JpaRepository<Service, Long> {
 
-    Optional<Service> findByName(Familiar name);
+    Optional<Service> findByName(String name);
 
     List<Service> findByDateAndName(String date, String name);
 }
