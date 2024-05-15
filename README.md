@@ -164,7 +164,7 @@
 
        
 
-### User get a service
+#### User get a service
 
 * api/v1/service/get-Service
 
@@ -174,6 +174,31 @@
         "date": date,
         "name": "name",
         }
+
+#### User update a service
+
+* api/v1/service/update-Service
+    
+        User update info from another Service.
+
+        {
+        "name": "name",
+        "breakfast": "breakfast",
+        "lunch": "lunch",
+        "snack": "snack",
+        "diaperNum": diaperNum,
+        "shower": "shower",
+        "urination": urination,
+        "deposition": deposition
+        }
+
+#### User delete a service
+
+* api/v1/service/delete-Service/{name}/{date}
+
+      User admin delete a Service
+      Needs name and date of service
+
 
 
 ### Familiar:
